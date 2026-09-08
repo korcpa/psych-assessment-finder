@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>나에게 맞는 심리평가 찾기</title>
+  <meta
+    name="description"
+    content="연령, 현재의 어려움, 평가 목적을 바탕으로 나에게 맞는 심리평가 유형을 안내합니다."
+  />
+  
+  <style>
+    :root {
+      --bg: #eceaf4;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #b8c7e3;
+      --accent-2: #d6c6e3;
+      --accent-3: #c79bb9;
+      --line: #111827;
+      --soft: #f7f5fb;
+      --warning: #fff7ed;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        linear-gradient(180deg, #efedf6 0%, #e9e7f0 100%);
+      color: var(--text);
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Noto Sans KR", Arial, sans-serif;
+    }
+
+    body {
+      padding: 18px 10px 36px;
+    }
+
+    button, input {
+      font: inherit;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      text-align: left;
+      margin: 0 0 14px;
+      padding: 0 4px;
+    }
+
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: 28px;
+      line-height: 1.25;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 2px solid var(--line);
+      box-shadow: 5px 5px 0 var(--line);
+      border-radius: 0;
+      overflow: hidden;
+    }
+
+    .topbar {
+      padding: 16px 16px 0;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .progress-track {
+      height: 10px;
+      border: 2px solid var(--line);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--accent-2);
+      transition: width .2s ease;
+    }
+
+    .screen {
+      display: none;
+      padding: 20px 16px 18px;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .eyebrow {
+      margin-bottom: 8px;
+      color: #5962a8;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .03em;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 23px;
+      line-height: 1.4;
+      letter-spacing: -0.035em;
+    }
+
+    .lead {
+      margin: 0 0 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .npc-box {
+      margin: 0 0 18px;
+      padding: 13px 14px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #f8f7fc;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .npc-name {
+      display: block;
+      margin-bottom: 4px;
+      font-weight: 800;
+    }
+
+    .choices {
+      display: grid;
+      gap: 11px;
+    }
+
+    .choice {
+      width: 100%;
+      padding: 14px 14px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      border-radius: 0;
+      transition: transform .08s ease, box-shadow .08s ease, background .08s ease;
+    }
+
+    .choice:hover {
+      background: #faf9fd;
+    }
+
+    .choice:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--line);
+    }
+
+    .choice.selected {
+      background: var(--accent-soft, #eef0fb);
+      outline: 3px solid rgba(184, 199, 227, .55);
+      outline-offset: -5px;
+    }
+
+    .choice-title {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .choice-sub {
+      display: block;
+      margin-top: 5px;
+      padding-left: 30px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .emoji {
+      flex: 0 0 auto;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn, .center-link {
+      min-height: 46px;
+      padding: 0 15px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #fff;
+      color: var(--text);
+      font-weight: 800;
+      cursor: pointer;
+      border-radius: 0;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .btn:active, .center-link:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--line);
+    }
+
+    .btn.primary, .center-link.primary {
+      background: var(--accent);
+    }
+
+    .result-wrap {
+      display: grid;
+      gap: 14px;
+    }
+
+    .result-hero {
+      padding: 17px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #f3f1fb;
+    }
+
+    .result-label {
+      margin-bottom: 6px;
+      font-weight: 900;
+      font-size: 12px;
+      color: #5962a8;
+    }
+
+    .result-title {
+      margin: 0 0 10px;
+      font-size: 24px;
+      line-height: 1.4;
+      letter-spacing: -0.035em;
+    }
+
+    .result-summary {
+      margin: 0;
+      color: #374151;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .section-card {
+      padding: 16px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #fff;
+    }
+
+    .section-card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .section-card p {
+      margin: 0;
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .section-card ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .note-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .note {
+      padding: 13px;
+      border: 2px solid var(--line);
+      background: #faf9fd;
+    }
+
+    .note strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 13px;
+    }
+
+    .qualification {
+      padding: 15px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #f9f7fc;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .qualification strong {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .center-link {
+      width: 100%;
+      background: var(--accent-2);
+    }
+
+    .disclaimer {
+      padding: 13px;
+      border: 2px dashed var(--line);
+      background: #fafafa;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    .error {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 2px solid var(--line);
+      background: #fff1f2;
+      color: #9f1239;
+      font-size: 12px;
+    }
+
+    .error.show { display: block; }
+
+
+
+    .result-detail-title {
+      margin: -2px 0 9px;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .result-tag {
+      padding: 5px 8px;
+      border: 1px solid #d1d5db;
+      background: #f5f5f7;
+      font-size: 11px;
+      line-height: 1.3;
+    }
+
+    .recommendation-note {
+      padding: 13px;
+      border: 2px solid #e8c866;
+      background: #fffbea;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+
+    .cover-screen {
+      padding-top: 22px;
+    }
+
+    .cover-title-wrap {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .cover-kicker {
+      display: inline-block;
+      margin-bottom: 8px;
+      padding: 4px 8px;
+      border: 2px solid var(--line);
+      background: #fff;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    .cover-title {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.25;
+    }
+
+    .cover-desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .cover-stage {
+      position: relative;
+      min-height: 285px;
+      margin: 10px 0 18px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background:
+        linear-gradient(180deg, #faf6ee 0%, #f4efe8 100%);
+      overflow: hidden;
+    }
+
+    .character-placeholder {
+      position: absolute;
+      left: 16px;
+      bottom: 0;
+      width: 48%;
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 12px 8px 16px;
+      border-right: 2px dashed rgba(17,24,39,.2);
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+    }
+
+    .character-emoji {
+      font-size: 92px;
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+
+    .character-label {
+      max-width: 120px;
+      line-height: 1.4;
+    }
+
+    .speech-bubble {
+      position: absolute;
+      right: 14px;
+      top: 28px;
+      width: 47%;
+      padding: 15px 13px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #fff;
+      font-size: 14px;
+      line-height: 1.65;
+      text-align: center;
+    }
+
+    .speech-bubble::after {
+      content: "";
+      position: absolute;
+      left: -12px;
+      bottom: 22px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-left: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      transform: rotate(45deg);
+    }
+
+    .cover-info {
+      margin-bottom: 16px;
+      padding: 14px;
+      border: 2px solid var(--line);
+      box-shadow: 3px 3px 0 var(--line);
+      background: #f3f6ff;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .cover-info strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .cover-info p {
+      margin: 0;
+      color: #4b5563;
+    }
+
+    .cover-start {
+      width: 100%;
+      background: var(--accent-2);
+      font-size: 16px;
+    }
+
+
+    @media (max-width: 440px) {
+      body {
+        padding: 10px 8px 26px;
+      }
+      .hero h1 {
+        font-size: 25px;
+      }
+      .panel {
+        box-shadow: 4px 4px 0 var(--line);
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <h1>나에게 맞는 심리평가 찾기</h1>
+      <p>몇 가지 질문에 답하면 현재 상황에 맞는 심리평가의 종류를 안내해드려요.</p>
+    </header>
+
+    <section class="panel">
+      <div class="topbar" id="topbar">
+        <div class="progress-row">
+          <span id="stepLabel">STEP 0</span>
+          <span id="progressText">1 / 5</span>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      
+      <section class="screen active cover-screen" data-screen="-1">
+        <div class="cover-title-wrap">
+          <div class="cover-kicker">🧠 PSYCHOLOGICAL ASSESSMENT GUIDE</div>
+          <h2 class="cover-title">심리평가 찾기 🔎</h2>
+          <p class="cover-desc">
+            몇 가지 질문을 통해<br>
+            현재 나에게 필요한 심리평가를 함께 찾아봐요.
+          </p>
+        </div>
+
+        <div class="cover-stage">
+          <div class="character-placeholder" aria-label="임상심리사 캐릭터 이미지 자리">
+            <div class="character-emoji">🧑‍⚕️</div>
+            <div class="character-label">임상심리사 캐릭터 이미지 영역</div>
+          </div>
+
+          <div class="speech-bubble">
+            <strong>안녕하세요!</strong><br>
+            어떤 평가가 필요한지<br>
+            함께 알아볼까요?
+          </div>
+        </div>
+
+        <div class="cover-info">
+          <strong>💡 심리평가란?</strong>
+          <p>
+            단순한 성격 테스트가 아니라, 현재 겪는 어려움과 인지기능,
+            정서 및 성격 특성을 여러 정보를 통해 종합적으로 살펴보는 과정입니다.
+          </p>
+        </div>
+
+        <button class="btn primary cover-start" id="startButton">
+          시작하기 ▶
+        </button>
+      </section>
+
+      <section class="screen" data-screen="0">
+        <div class="eyebrow">STEP 0 · 검사 대상</div>
+        <h2>누구를 위한 심리평가를 찾고 계신가요?</h2>
+        <p class="lead">검사를 직접 받을 분을 기준으로 선택해주세요.</p>
+        <div class="choices">
+          <button class="choice" data-key="perspective" data-value="A0-1">
+            <span class="choice-title"><span class="emoji">🙂</span>본인</span>
+            <span class="choice-sub">제가 직접 검사를 받아요.</span>
+          </button>
+          <button class="choice" data-key="perspective" data-value="A0-2">
+            <span class="choice-title"><span class="emoji">👥</span>가족 또는 다른 사람</span>
+            <span class="choice-sub">자녀, 부모님, 배우자 등 다른 사람을 위한 검사예요.</span>
+          </button>
+        </div>
+        <div class="footer-actions"></div>
+      </section>
+
+      <section class="screen" data-screen="1">
+        <div class="eyebrow">STEP 1 · 대상자 연령</div>
+        <h2>검사를 받을 분의 연령대를 선택해주세요.</h2>
+        <p class="lead">연령에 따라 다음 질문과 추천 평가가 달라집니다.</p>
+        <div class="choices" id="ageChoices">
+          <button class="choice" data-key="age" data-value="AGE-INFANT">
+            <span class="choice-title"><span class="emoji">👶</span>영유아</span>
+            <span class="choice-sub">0~6세</span>
+          </button>
+          <button class="choice" data-key="age" data-value="AGE-YOUTH">
+            <span class="choice-title"><span class="emoji">🧑‍🎓</span>아동·청소년</span>
+            <span class="choice-sub">7~18세</span>
+          </button>
+          <button class="choice" data-key="age" data-value="AGE-ADULT">
+            <span class="choice-title"><span class="emoji">🧑</span>성인</span>
+            <span class="choice-sub">19~64세</span>
+          </button>
+          <button class="choice" data-key="age" data-value="AGE-SENIOR">
+            <span class="choice-title"><span class="emoji">👵</span>노인</span>
+            <span class="choice-sub">65세 이상</span>
+          </button>
+        </div>
+        <div class="footer-actions">
+          <button class="btn" data-prev>이전</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="2">
+        <div class="eyebrow">STEP 2 · 주된 어려움</div>
+        <h2 id="problemQuestion">현재 가장 걱정되는 부분은 무엇인가요?</h2>
+        <p class="lead">가장 주된 어려움 한 가지를 선택해주세요.</p>
+        <div class="choices" id="problemChoices"></div>
+        <div class="footer-actions">
+          <button class="btn" data-prev>이전</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="3">
+        <div class="eyebrow">STEP 3 · 평가 목적</div>
+        <h2>심리평가를 받고자 하는 가장 주된 목적은 무엇인가요?</h2>
+        <p class="lead">평가를 통해 가장 알고 싶은 내용을 선택해주세요.</p>
+        <div class="choices">
+          <button class="choice" data-key="purpose" data-value="PUR-1" id="purposeSelf">
+            <span class="choice-title" id="purposeSelfTitle"><span class="emoji">🎭</span>나의 특성을 이해하고 싶어요.</span>
+            <span class="choice-sub" id="purposeSelfSub">인지적 강·약점과 성격 특성을 알고 싶어요.</span>
+          </button>
+          <button class="choice" data-key="purpose" data-value="PUR-2">
+            <span class="choice-title"><span class="emoji">🔎</span>현재 증상의 원인을 보다 정확하게 확인하고 싶어요.</span>
+            <span class="choice-sub">진단을 위한 정보를 얻고 싶어요.</span>
+          </button>
+          <button class="choice" data-key="purpose" data-value="PUR-3">
+            <span class="choice-title"><span class="emoji">🧭</span>앞으로의 치료 계획을 세우는 데 도움을 받고 싶어요.</span>
+            <span class="choice-sub">약물치료나 심리상담 등의 방향을 정하고 싶어요.</span>
+          </button>
+          <button class="choice" data-key="purpose" data-value="PUR-4">
+            <span class="choice-title"><span class="emoji">📄</span>공식 기관에 제출할 평가가 필요해요.</span>
+            <span class="choice-sub">병원, 법원, 산재, 보험, 학교 등</span>
+          </button>
+          <button class="choice" data-key="purpose" data-value="PUR-5">
+            <span class="choice-title"><span class="emoji">💡</span>간단한 검사로 먼저 확인해보고 싶어요.</span>
+            <span class="choice-sub">시간과 비용 부담이 적은 평가를 우선하고 싶어요.</span>
+          </button>
+        </div>
+        <div class="footer-actions">
+          <button class="btn" data-prev>이전</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="4">
+        <div class="eyebrow">STEP 4 · 함께 고려할 사항</div>
+        <h2>평가할 때 함께 고려하면 좋을 점이 있나요?</h2>
+        <p class="lead">함께 나타나는 어려움에 따라 추천 평가가 달라질 수 있어요. 해당되는 내용을 모두 선택해주세요.</p>
+        <div class="choices" id="additionalChoices"></div>
+        <div class="error" id="optionError">하나 이상 선택해주세요.</div>
+        <div class="footer-actions">
+          <button class="btn" data-prev>이전</button>
+          <button class="btn primary" id="showResult">🔍 결과 보기</button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="5">
+        <div class="eyebrow">RESULT</div>
+        <div id="resultContent"></div>
+        <div class="footer-actions">
+          <button class="btn" id="restart">처음부터 다시 찾기</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      perspective: null,
+      age: null,
+      problem: null,
+      purpose: null,
+      options: []
+    };
+
+    let currentScreen = -1;
+    const totalQuestionScreens = 5;
+
+    const screens = [...document.querySelectorAll(".screen")];
+    const topbar = document.getElementById("topbar");
+    const stepLabel = document.getElementById("stepLabel");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const problemQuestion = document.getElementById("problemQuestion");
+    const problemChoices = document.getElementById("problemChoices");
+    const optionError = document.getElementById("optionError");
+    const additionalChoices = document.getElementById("additionalChoices");
+    const ageChoices = document.getElementById("ageChoices");
+    const purposeSelfTitle = document.getElementById("purposeSelfTitle");
+    const purposeSelfSub = document.getElementById("purposeSelfSub");
+
+
+    const problemIcons = {
+      "PROB-DEV-LANG": "💬",
+      "PROB-DEV-SOC": "👥",
+      "PROB-DEV-MOTOR": "🧸",
+      "PROB-DEV-BEHAV": "⚡",
+      "PROB-ADHD": "⚡",
+      "PROB-LEARN": "📚",
+      "PROB-EMO-YOUTH": "🌧️",
+      "PROB-SELF-YOUTH": "🎭",
+      "PROB-TRAUMA": "💔",
+      "PROB-EMO": "🌧️",
+      "PROB-ANX": "🚨",
+      "PROB-SELF": "🎭",
+      "PROB-REL": "🤝",
+      "PROB-BRAIN": "🩹",
+      "PROB-DEMENTIA": "🧠",
+      "PROB-SENIOR-EMO": "🌧️",
+      "PROB-ETC": "❓"
+    };
+
+    const problemSets = {
+      "AGE-INFANT": {
+        question: "아이에게서 가장 걱정되는 부분은 무엇인가요?",
+        items: [
+          ["PROB-DEV-LANG", "말이 또래보다 늦거나 의사소통 발달이 걱정돼요."],
+          ["PROB-DEV-SOC", "눈맞춤이 적거나 사람들과의 상호작용이 어려워 보여요."],
+          ["PROB-DEV-MOTOR", "걷기, 손 사용 등 운동발달이 느리거나 전반적인 발달이 더딘 것 같아요."],
+          ["PROB-DEV-BEHAV", "심한 떼쓰기, 공격적인 행동, 산만함 또는 감각 예민성이 걱정돼요."],
+          ["PROB-ETC", "특별한 문제가 있다기보다 전반적인 발달 상태를 확인하고 싶어요."]
+        ]
+      },
+      "AGE-YOUTH": {
+        question: "현재 가장 걱정되는 부분은 무엇인가요?",
+        items: [
+          ["PROB-ADHD", "주의가 쉽게 흐트러지고 실수가 많거나 충동적인 행동이 있어요."],
+          ["PROB-LEARN", "노력에 비해 읽기, 쓰기, 계산 또는 학습 습득이 많이 어려워요."],
+          ["PROB-EMO-YOUTH", "등교 거부, 시험불안, 우울감, 짜증이나 분노 등 정서적인 어려움이 있어요."],
+          ["PROB-SELF-YOUTH", "아이의 인지적 강·약점이나 기질·성격 특성을 알고 싶어요."],
+          ["PROB-TRAUMA", "학교폭력, 사고, 가정 내 갈등 등 힘든 사건 이후 어려움이 지속되고 있어요."],
+          ["PROB-ETC", "그 밖의 정서 또는 행동 문제가 있어요."]
+        ]
+      },
+      "AGE-ADULT": {
+        question: "현재 가장 큰 어려움은 무엇인가요?",
+        items: [
+          ["PROB-EMO", "우울감, 무기력, 번아웃 또는 의욕 저하가 지속돼요."],
+          ["PROB-ANX", "불안, 공황발작, 예기불안 또는 심한 긴장이 있어요."],
+          ["PROB-ADHD", "집중하기 어렵고 일을 미루거나 실수가 반복되어 성인 ADHD가 걱정돼요."],
+          ["PROB-SELF", "나의 기질, 성격 패턴, 인지적 강·약점 등을 깊이 이해하고 싶어요."],
+          ["PROB-REL", "직장, 연인 또는 가족관계에서 비슷한 갈등이 반복돼요."],
+          ["PROB-TRAUMA", "사고, 이별, 폭력, 직장 내 괴롭힘 등 힘든 사건 이후 고통이 지속돼요."],
+          ["PROB-BRAIN", "교통사고, 산업재해, 낙상 또는 뇌손상 이후 기억력이나 성격이 달라졌어요."],
+          ["PROB-ETC", "여러 심리적 문제가 복합적으로 나타나고 있어요."]
+        ]
+      },
+      "AGE-SENIOR": {
+        question: "현재 가장 걱정되는 부분은 무엇인가요?",
+        items: [
+          ["PROB-DEMENTIA", "최근 일을 자주 잊거나 길찾기, 계산 등이 예전보다 어려워졌어요."],
+          ["PROB-SENIOR-EMO", "우울감, 무기력, 건강에 대한 지나친 걱정이나 가족관계의 어려움이 있어요."],
+          ["PROB-BRAIN", "뇌졸중, 뇌출혈, 낙상 등 이후 기억력이나 다른 인지기능이 급격히 떨어졌어요."],
+          ["PROB-ETC", "그 밖의 일상생활 혼란이나 정서적인 어려움이 있어요."]
+        ]
+      }
+    };
+
+
+    const additionalOptionSets = {
+      "AGE-INFANT": [
+        ["OPT-INFANT-LANG", "💬", "말이나 의사소통의 어려움도 함께 있어요."],
+        ["OPT-INFANT-SOC", "👥", "눈맞춤이나 사람들과의 상호작용도 함께 걱정돼요."],
+        ["OPT-INFANT-BEHAV", "⚡", "떼쓰기, 산만함, 감각 예민성 등 행동 특성도 걱정돼요."],
+        ["OPT-INFANT-SETTING", "🏫", "어린이집이나 유치원에서도 비슷한 어려움이 보여요."],
+        ["OPT-NONE", "✅", "특별히 없어요."]
+      ],
+      "AGE-YOUTH": [
+        ["OPT-YOUTH-SCHOOL", "📚", "학습이나 학교 적응의 어려움도 있어요."],
+        ["OPT-YOUTH-MULTISETTING", "🏫", "학교와 가정에서 비슷한 어려움이 나타나요."],
+        ["OPT-EMOTION", "🌧️", "우울감, 불안, 짜증이나 감정 기복도 함께 있어요."],
+        ["OPT-SLEEP", "🛌", "수면이나 식사 문제가 함께 있어요."],
+        ["OPT-YOUTH-REL", "🤝", "또래 또는 가족관계의 어려움도 함께 있어요."],
+        ["OPT-FUNCTION", "📉", "학교생활이나 일상생활에 지장이 큰 편이에요."],
+        ["OPT-NONE", "✅", "특별히 없어요."]
+      ],
+      "AGE-ADULT": [
+        ["OPT-EMOTION", "🌧️", "우울감, 불안, 감정 기복 등 정서적인 어려움도 함께 있어요."],
+        ["OPT-SLEEP", "🛌", "수면이나 식사 문제가 함께 있어요."],
+        ["OPT-SOMAT", "🩺", "두통, 어지럼, 위장 불편감 등 반복되는 신체 증상이 있어요."],
+        ["OPT-FUNCTION", "📉", "직장·학업·가사 등 일상생활에 지장이 큰 편이에요."],
+        ["OPT-ADULT-REL", "🤝", "대인관계의 어려움도 함께 있어요."],
+        ["OPT-NONE", "✅", "특별히 없어요."]
+      ],
+      "AGE-SENIOR": [
+        ["OPT-SENIOR-ADL", "🏠", "혼자 일상생활을 하는 데 이전보다 어려움이 있어요."],
+        ["OPT-SENIOR-MED", "💊", "현재 치료 중인 질환이나 복용 중인 약이 있어요."],
+        ["OPT-SLEEP", "🛌", "수면이나 식사 변화가 함께 있어요."],
+        ["OPT-SENIOR-FAMILY", "👥", "가족이 관찰한 기억력이나 행동 변화도 있어요."],
+        ["OPT-FUNCTION", "📉", "최근 일상생활 기능이 눈에 띄게 떨어졌어요."],
+        ["OPT-NONE", "✅", "특별히 없어요."]
+      ]
+    };
+
+    const problemToAdditionalOption = {
+      "PROB-DEV-LANG": "OPT-INFANT-LANG",
+      "PROB-DEV-SOC": "OPT-INFANT-SOC",
+      "PROB-DEV-BEHAV": "OPT-INFANT-BEHAV",
+      "PROB-LEARN": "OPT-YOUTH-SCHOOL",
+      "PROB-REL": "OPT-ADULT-REL"
+    };
+
+    const ruleData = {
+      "RULE-1": {
+        title: "발달평가",
+        detailedTitle: "영유아 발달 및 상호작용 평가",
+        summary: "아이의 현재 발달 수준을 인지, 언어, 운동, 사회성 및 행동 영역에서 종합적으로 살펴보는 평가입니다.",
+        looks: [
+          "인지 및 문제해결 능력",
+          "언어와 의사소통 발달",
+          "대근육·소근육 발달",
+          "사회성 및 적응행동",
+          "정서 및 행동 특성",
+          "부모와의 상호작용"
+        ],
+        tests: "영유아 발달검사, 사회성 및 적응행동 평가, 부모보고 행동평정척도, 부모 면담, 놀이 및 상호작용 관찰, 필요 시 자폐스펙트럼 관련 평가 등이 포함될 수 있습니다.",
+        screeningTitle: "영유아 발달선별검사",
+        screeningText: "영유아 발달선별검사를 통해 언어, 인지, 운동, 사회성 등 여러 발달 영역에서 추가적인 확인이 필요한 부분이 있는지 우선 살펴볼 수 있습니다."
+      },
+      "RULE-2": {
+        title: "학습·인지평가",
+        detailedTitle: "학습 및 인지기능 평가",
+        summary: "학습의 어려움이 전반적인 인지능력, 특정 학습영역, 주의력 또는 정서적 요인과 어떻게 관련되어 있는지 살펴보는 평가입니다.",
+        looks: [
+          "전반적인 인지능력",
+          "작업기억과 처리속도",
+          "읽기·쓰기·수학 등 기초학습능력",
+          "주의집중 및 실행기능",
+          "학습에 영향을 줄 수 있는 정서·행동 요인"
+        ],
+        tests: "아동·청소년용 지능검사, 기초학습기능검사, 주의력검사, 실행기능 및 기억검사, 행동 및 정서평가 등이 포함될 수 있습니다.",
+        screeningTitle: "인지능력 및 학습 선별평가",
+        screeningText: "지능검사나 특정 학습영역 검사를 중심으로 인지적 강·약점과 학습 문제의 특성을 먼저 확인해볼 수 있습니다."
+      },
+      "RULE-3": {
+        title: "ADHD 평가",
+        detailedTitle: "ADHD 감별을 위한 주의·실행기능 평가",
+        summary: "주의집중의 어려움이나 충동성이 ADHD와 관련된 것인지, 또는 불안·우울·수면 문제·인지적 특성 등 다른 요인의 영향을 받고 있는지 종합적으로 살펴봅니다.",
+        looks: [
+          "지속적·선택적 주의력",
+          "충동조절",
+          "작업기억",
+          "계획 및 문제해결",
+          "정보처리 속도",
+          "정서 상태와 일상생활 실행기능"
+        ],
+        tests: "전산화 주의력검사, 지능검사, 실행기능검사, ADHD 행동평정척도 또는 자기보고척도, 정서 및 성격검사, 임상면담 등이 포함될 수 있습니다.",
+        screeningTitle: "주의집중 및 ADHD 선별평가",
+        screeningText: "전산화 주의력검사와 ADHD 관련 평정척도 등을 통해 현재 어려움이 추가적인 정밀평가가 필요한 수준인지 우선 확인할 수 있습니다."
+      },
+      "RULE-4": {
+        title: "신경심리평가",
+        detailedTitle: "인지기능 및 치매 감별 신경심리평가",
+        summary: "기억력뿐 아니라 주의력, 언어능력, 시공간능력 및 실행기능 등 다양한 인지 영역을 확인하는 평가입니다.",
+        looks: [
+          "기억력",
+          "주의집중",
+          "언어능력",
+          "시공간능력",
+          "실행기능과 판단력",
+          "일상생활 수행능력",
+          "인지기능에 영향을 줄 수 있는 정서 상태"
+        ],
+        tests: "종합 신경심리검사, 기억력 및 실행기능검사, 일상생활 기능평가, 치매 중증도 평가, 우울 및 정서상태 평가 등이 포함될 수 있습니다.",
+        screeningTitle: "간이 인지기능 선별검사",
+        screeningText: "간단한 인지기능 선별검사를 통해 기억력 및 전반적인 인지상태를 우선 확인할 수 있습니다."
+      },
+      "RULE-5": {
+        title: "신경심리평가",
+        detailedTitle: "뇌손상 후 신경인지기능 평가",
+        summary: "교통사고, 산업재해, 뇌졸중, 낙상 또는 기타 뇌손상 이후 나타난 인지·정서·행동 변화를 체계적으로 확인하는 평가입니다.",
+        looks: [
+          "주의력 및 처리속도",
+          "학습 및 기억",
+          "언어 및 시공간능력",
+          "실행기능",
+          "정서 및 성격 변화",
+          "일상생활 수행능력",
+          "필요 시 검사 결과의 타당성"
+        ],
+        tests: "종합 신경심리검사, 지능검사, 기억력 및 실행기능검사, 정서·성격검사, 증상 및 반응 타당도 평가, 일상생활 기능평가 등이 포함될 수 있습니다.",
+        screeningTitle: "신경인지기능 선별평가",
+        screeningText: "현재 가장 문제가 되는 인지 영역을 중심으로 간단한 선별평가를 먼저 시행할 수 있습니다."
+      },
+      "RULE-6": {
+        title: "인지·성격 종합평가",
+        detailedTitle: "인지적 강·약점 및 기질·성격 평가",
+        summary: "인지적 강점과 약점, 기질과 성격, 감정을 경험하고 조절하는 방식, 반복되는 대인관계 패턴 등을 폭넓게 살펴보는 평가입니다.",
+        looks: [
+          "인지적 강점과 약점",
+          "기질 및 성격 특성",
+          "감정 경험과 조절방식",
+          "스트레스 대처방식",
+          "자기개념",
+          "대인관계 패턴"
+        ],
+        tests: "지능 및 인지기능검사, 다면적 인성검사, 기질 및 성격검사, 문장완성검사, 심층 임상면담 및 필요 시 투사적 검사가 포함될 수 있습니다.",
+        screeningTitle: "기질·성격 프로파일 평가",
+        screeningText: "기질·성격검사와 성격검사, 간단한 면담 등을 중심으로 자신의 성격 특성과 정서적 패턴을 먼저 살펴볼 수 있습니다."
+      },
+      "RULE-7": {
+        title: "종합심리평가",
+        detailedTitle: "정서·성격 및 인지 특성을 함께 살펴보는 종합평가",
+        summary: "현재 겪고 있는 정서적 어려움과 성격 특성, 스트레스 대처방식 및 인지적 요인을 종합적으로 살펴보는 평가입니다.",
+        looks: [
+          "현재 정서 상태",
+          "성격 및 대인관계 특성",
+          "스트레스 대처방식",
+          "사고 및 감정조절 특성",
+          "인지적 강·약점",
+          "증상에 영향을 주는 다양한 심리적 요인"
+        ],
+        tests: "지능 또는 인지기능검사, 정서·성격검사, 행동평정척도, 문장완성검사, 증상별 임상척도, 심층 임상면담 및 필요 시 투사적 검사가 포함될 수 있습니다.",
+        screeningTitle: "정서·성격 기본평가",
+        screeningText: "현재 가장 문제가 되는 우울, 불안, 스트레스 등의 증상과 전반적인 정서·성격 특성을 중심으로 간단한 평가를 먼저 받아볼 수 있습니다."
+      }
+    };
+
+    const complaintNotes = {
+      "PROB-DEV-LANG": {
+        title: "언어 발달이 가장 걱정된다면",
+        text: "언어 발달뿐 아니라 전반적인 인지·사회적 발달 수준을 함께 살펴보면 언어 지연의 특성을 이해하는 데 도움이 됩니다."
+      },
+      "PROB-DEV-SOC": {
+        title: "사회적 상호작용이 가장 걱정된다면",
+        text: "사회적 의사소통, 상호작용 양상과 반복적·제한적 행동 특성을 함께 확인하는 평가가 권장됩니다."
+      },
+      "PROB-DEV-MOTOR": {
+        title: "운동 및 전반적 발달이 가장 걱정된다면",
+        text: "인지·언어뿐 아니라 대근육 및 소근육 등 전반적인 발달 영역을 함께 확인하는 것이 좋습니다."
+      },
+      "PROB-DEV-BEHAV": {
+        title: "행동이나 감각 특성이 가장 걱정된다면",
+        text: "아이의 발달 수준과 함께 행동·정서 특성, 감각 민감성 및 부모와의 상호작용 양상을 함께 살펴보는 것이 도움이 됩니다."
+      }
+    };
+
+    const clinicalNotes = {
+
+      "INFANT-SETTING": {
+        title: "어린이집·유치원에서도 비슷한 어려움이 보인다면",
+        text: "가정 외 환경에서도 비슷한 어려움이 관찰되는지 확인하면 아이의 발달 및 행동 특성을 이해하는 데 도움이 됩니다. 가능하다면 교사나 돌봄 제공자가 관찰한 내용도 평가 시 함께 전달해주세요."
+      },
+      "YOUTH-SCHOOL": {
+        title: "학습이나 학교 적응의 어려움이 함께 있다면",
+        text: "현재의 정서·행동 또는 주의집중 문제가 학습과 학교생활에 어떤 영향을 주고 있는지도 함께 살펴보는 것이 좋습니다."
+      },
+      "MULTISETTING": {
+        title: "학교와 가정에서 비슷한 어려움이 나타난다면",
+        text: "아동·청소년의 행동 특성은 환경에 따라 다르게 나타날 수 있어 여러 환경에서의 모습을 함께 확인하는 것이 중요합니다."
+      },
+      "RELATIONSHIP": {
+        title: "대인관계의 어려움도 함께 있다면",
+        text: "반복되는 관계 갈등이나 대인관계의 어려움이 현재 증상과 어떤 관련이 있는지 평가 과정에서 함께 살펴볼 수 있습니다."
+      },
+      "SENIOR-ADL": {
+        title: "혼자 하는 일상생활이 이전보다 어려워졌다면",
+        text: "인지기능의 변화뿐 아니라 식사 준비, 약 복용, 금전관리, 이동 등 실제 일상생활 수행능력의 변화를 함께 확인하는 것이 중요합니다."
+      },
+      "SENIOR-MED": {
+        title: "치료 중인 질환이나 복용약이 있다면",
+        text: "신체질환과 복용 중인 약물은 인지 및 정서 상태에 영향을 줄 수 있으므로 평가 시 현재의 병력과 복용약 정보를 함께 알려주세요."
+      },
+      "SENIOR-FAMILY": {
+        title: "가족이 관찰한 변화가 있다면",
+        text: "기억력이나 행동 변화는 본인보다 가족이 먼저 알아차리는 경우도 있습니다. 가능하다면 가족이 관찰한 변화의 시작 시점과 구체적인 모습을 함께 전달해주세요."
+      },
+      "EMOTION": {
+        title: "정서적인 어려움도 함께 있다면",
+        text: "우울감, 불안, 짜증이나 감정 기복이 함께 나타나는 경우 주의집중이나 실행기능의 어려움이 ADHD와 관련된 것인지, 정서적 어려움의 영향을 받고 있는지 함께 감별하는 것이 중요합니다."
+      },
+      "SLEEP": {
+        title: "수면·식사 변화가 함께 있다면",
+        text: "수면이나 식사의 변화는 우울, 불안, 스트레스 등 다양한 심리적 상태와 함께 나타날 수 있습니다. 평가 면담에서 증상이 시작된 시점과 정도, 평소 생활 리듬의 변화를 함께 알려주세요."
+      },
+      "SOMATIC": {
+        title: "반복되는 신체 증상이 함께 있다면",
+        text: "두통, 어지럼, 위장 불편감 등 신체 증상이 지속된다면 필요한 의학적 평가와 함께 스트레스, 불안, 우울 등 심리적 요인이 증상의 발생이나 지속에 영향을 미치고 있는지도 함께 살펴볼 수 있습니다."
+      },
+      "FUNCTION": {
+        title: "일상생활이 많이 어려워진 상태라면",
+        text: "직장, 학교, 가사 등 평소 역할을 수행하기 어려울 정도로 기능이 저하되어 있다면 증상의 종류뿐 아니라 현재의 일상생활 기능 수준을 함께 평가하는 것이 중요합니다. 필요한 경우 평가와 함께 치료 또는 환경적 지원을 신속하게 연계하는 것이 도움이 될 수 있습니다."
+      },
+      "TRAUMA": {
+        title: "힘든 사건 이후 증상이 시작되었다면",
+        text: "사건 이후 반복적으로 떠오르는 기억, 회피, 과도한 경계, 수면 문제 또는 감정 변화가 있는지 함께 평가하는 것이 좋습니다. 사건 자체뿐 아니라 사건 전후의 일상 기능 변화와 현재의 안전감도 중요한 평가 대상입니다."
+      },
+      "TREATMENT": {
+        title: "치료 계획을 세우기 위한 평가라면",
+        text: "평가 결과는 현재 어려움을 설명하는 것뿐 아니라 약물치료, 심리치료, 생활환경 조정 등 이후 개입 방향을 결정하는 데 활용될 수 있습니다. 평가를 의뢰할 때 현재 받고 있는 치료와 평가를 통해 알고 싶은 점을 함께 전달하면 도움이 됩니다."
+      },
+      "OFFICIAL": {
+        title: "공식 기관 제출이 필요한 경우",
+        text: "병원, 법원, 보험, 산재, 학교 등 제출 기관과 목적에 따라 요구되는 검사와 보고서 형식이 달라질 수 있습니다. 예약 전에 해당 기관에서 공식 제출용 평가와 문서 발급이 가능한지 확인해주세요."
+      }
+    };
+
+    function setScreen(index) {
+      currentScreen = index;
+      screens.forEach((screen) => {
+        screen.classList.toggle("active", Number(screen.dataset.screen) === index);
+      });
+
+      if (index >= 0 && index <= 4) {
+        topbar.style.display = "block";
+        stepLabel.textContent = `STEP ${index}`;
+        progressText.textContent = `${index + 1} / ${totalQuestionScreens}`;
+        progressFill.style.width = `${((index + 1) / totalQuestionScreens) * 100}%`;
+      } else {
+        topbar.style.display = "none";
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+
+    function goNextAfterSelection(nextScreen) {
+      window.setTimeout(() => setScreen(nextScreen), 180);
+    }
+
+    function updateAgeChoices() {
+      const infantButton = document.querySelector(
+        '[data-key="age"][data-value="AGE-INFANT"]'
+      );
+
+      if (!infantButton) return;
+
+      const isSelf = state.perspective === "A0-1";
+      infantButton.style.display = isSelf ? "none" : "";
+
+      // If the user goes back and changes from "other" to "self",
+      // clear an infant selection that is no longer valid.
+      if (isSelf && state.age === "AGE-INFANT") {
+        state.age = null;
+        state.problem = null;
+        infantButton.classList.remove("selected");
+        problemChoices.innerHTML = "";
+      }
+    }
+
+    function updatePurposeCopy() {
+      if (!purposeSelfTitle || !purposeSelfSub) return;
+
+      const isSelf = state.perspective === "A0-1";
+
+      if (state.age === "AGE-INFANT") {
+        purposeSelfTitle.innerHTML = '<span class="emoji">🎭</span>아이의 발달 특성과 강·약점을 이해하고 싶어요.';
+        purposeSelfSub.textContent = "아이의 전반적인 발달 특성을 더 잘 알고 싶어요.";
+        return;
+      }
+
+      if (isSelf) {
+        purposeSelfTitle.innerHTML = '<span class="emoji">🎭</span>나의 특성을 이해하고 싶어요.';
+        purposeSelfSub.textContent = "나의 인지적 강·약점과 성격 특성을 알고 싶어요.";
+        return;
+      }
+
+      if (state.age === "AGE-YOUTH") {
+        purposeSelfTitle.innerHTML = '<span class="emoji">🎭</span>아이의 특성을 이해하고 싶어요.';
+        purposeSelfSub.textContent = "아이의 인지적 강·약점과 기질·성격 특성을 알고 싶어요.";
+        return;
+      }
+
+      purposeSelfTitle.innerHTML = '<span class="emoji">🎭</span>검사를 받을 분의 특성을 이해하고 싶어요.';
+      purposeSelfSub.textContent = "인지적 강·약점과 성격 특성을 알고 싶어요.";
+    }
+
+    function updateSingleChoice(key, value, clickedButton) {
+      state[key] = value;
+
+      document
+        .querySelectorAll(`[data-key="${key}"]`)
+        .forEach((button) => button.classList.remove("selected"));
+
+      clickedButton.classList.add("selected");
+
+      if (key === "perspective") {
+        updateAgeChoices();
+        updatePurposeCopy();
+        goNextAfterSelection(1);
+        return;
+      }
+
+      if (key === "age") {
+        state.problem = null;
+        renderProblemChoices();
+        updatePurposeCopy();
+        renderAdditionalChoices();
+        goNextAfterSelection(2);
+        return;
+      }
+
+      if (key === "purpose") {
+        goNextAfterSelection(4);
+      }
+    }
+
+    document.querySelectorAll("[data-key]").forEach((button) => {
+      button.addEventListener("click", () => {
+        updateSingleChoice(button.dataset.key, button.dataset.value, button);
+      });
+    });
+
+    function renderProblemChoices() {
+      const set = problemSets[state.age];
+      if (!set) return;
+
+      problemQuestion.textContent = set.question;
+      problemChoices.innerHTML = "";
+
+      set.items.forEach(([value, label]) => {
+        const button = document.createElement("button");
+        button.className = "choice";
+        button.dataset.value = value;
+        const icon = problemIcons[value] || "❓";
+        button.innerHTML = `<span class="choice-title"><span class="emoji">${icon}</span>${label}</span>`;
+
+        if (state.problem === value) {
+          button.classList.add("selected");
+        }
+
+        button.addEventListener("click", () => {
+          state.problem = value;
+          [...problemChoices.children].forEach((item) =>
+            item.classList.remove("selected")
+          );
+          button.classList.add("selected");
+          updatePurposeCopy();
+          renderAdditionalChoices();
+          goNextAfterSelection(3);
+        });
+
+        problemChoices.appendChild(button);
+      });
+    }
+
+
+    document.querySelectorAll("[data-prev]").forEach((button) => {
+      button.addEventListener("click", () => {
+        setScreen(currentScreen - 1);
+      });
+    });
+
+
+    function toggleAdditionalOption(option, button) {
+      optionError.classList.remove("show");
+
+      if (option === "OPT-NONE") {
+        state.options = ["OPT-NONE"];
+        additionalChoices.querySelectorAll(".multi").forEach((b) => {
+          b.classList.toggle("selected", b.dataset.option === "OPT-NONE");
+        });
+        return;
+      }
+
+      state.options = state.options.filter((item) => item !== "OPT-NONE");
+      const noneButton = additionalChoices.querySelector('[data-option="OPT-NONE"]');
+      if (noneButton) noneButton.classList.remove("selected");
+
+      if (state.options.includes(option)) {
+        state.options = state.options.filter((item) => item !== option);
+        button.classList.remove("selected");
+      } else {
+        state.options.push(option);
+        button.classList.add("selected");
+      }
+    }
+
+    function renderAdditionalChoices() {
+      if (!additionalChoices || !state.age) return;
+
+      const items = additionalOptionSets[state.age] || [];
+      const duplicateOption = problemToAdditionalOption[state.problem];
+
+      // Clear choices that are no longer valid if age/problem changed.
+      const validOptions = items
+        .map(([value]) => value)
+        .filter((value) => value !== duplicateOption);
+
+      state.options = state.options.filter(
+        (value) => validOptions.includes(value) || value === "OPT-NONE"
+      );
+
+      additionalChoices.innerHTML = "";
+
+      items.forEach(([value, icon, label]) => {
+        if (value === duplicateOption) return;
+
+        const button = document.createElement("button");
+        button.className = "choice multi";
+        button.dataset.option = value;
+        button.innerHTML = `<span class="choice-title"><span class="emoji">${icon}</span>${label}</span>`;
+
+        if (state.options.includes(value)) button.classList.add("selected");
+
+        button.addEventListener("click", () => toggleAdditionalOption(value, button));
+        additionalChoices.appendChild(button);
+      });
+    }
+
+    function determineBaseRule() {
+      const { age, problem, purpose, options } = state;
+
+      const wantsScreening = purpose === "PUR-5";
+
+      const hasEmotionalConcern = options.includes("OPT-EMOTION");
+      const hasSleepConcern = options.includes("OPT-SLEEP");
+      const hasSevereFunctionProblem =
+        options.includes("OPT-FUNCTION") ||
+        options.includes("OPT-SENIOR-ADL");
+
+      const needsBroadDifferential =
+        hasEmotionalConcern ||
+        hasSleepConcern ||
+        hasSevereFunctionProblem ||
+        purpose === "PUR-2" ||
+        purpose === "PUR-3" ||
+        purpose === "PUR-4";
+
+      // 1. Development / neurocognitive domains keep their specialized route.
+      if (age === "AGE-INFANT") {
+        return "RULE-1";
+      }
+
+      if (
+        (age === "AGE-ADULT" || age === "AGE-SENIOR") &&
+        problem === "PROB-BRAIN"
+      ) {
+        return "RULE-5";
+      }
+
+      if (age === "AGE-SENIOR" && problem === "PROB-DEMENTIA") {
+        return "RULE-4";
+      }
+
+      if (age === "AGE-YOUTH" && problem === "PROB-LEARN") {
+        return "RULE-2";
+      }
+
+      // 2. ADHD: single-focus vs broad differential.
+      if (
+        (age === "AGE-YOUTH" || age === "AGE-ADULT") &&
+        problem === "PROB-ADHD"
+      ) {
+        if (wantsScreening) {
+          return "RULE-3";
+        }
+
+        if (needsBroadDifferential) {
+          return "RULE-7";
+        }
+
+        return "RULE-3";
+      }
+
+      // 3. Self-understanding route.
+      if (
+        problem === "PROB-SELF" ||
+        problem === "PROB-SELF-YOUTH" ||
+        purpose === "PUR-1"
+      ) {
+        return "RULE-6";
+      }
+
+      // 4. Emotional / relational / trauma / complex complaints.
+      return "RULE-7";
+    }
+
+
+    function isAdhdComplexComprehensive(baseRule) {
+      if (baseRule !== "RULE-7") return false;
+      if (state.problem !== "PROB-ADHD") return false;
+      if (!(state.age === "AGE-YOUTH" || state.age === "AGE-ADULT")) return false;
+
+      return (
+        state.options.includes("OPT-EMOTION") ||
+        state.options.includes("OPT-SLEEP") ||
+        state.options.includes("OPT-FUNCTION") ||
+        state.purpose === "PUR-2" ||
+        state.purpose === "PUR-3" ||
+        state.purpose === "PUR-4"
+      );
+    }
+
+    function determineDepth(baseRule) {
+      const wantsScreening = state.purpose === "PUR-5";
+
+      if (baseRule === "RULE-1") {
+        return wantsScreening
+          ? "infant-screening"
+          : "infant-comprehensive";
+      }
+
+      return wantsScreening ? "screening" : "comprehensive";
+    }
+
+    function determineNotes() {
+      const notes = [];
+
+      if (state.options.includes("OPT-EMOTION")) notes.push("EMOTION");
+      if (state.options.includes("OPT-SLEEP")) notes.push("SLEEP");
+      if (state.options.includes("OPT-SOMAT")) notes.push("SOMATIC");
+      if (state.options.includes("OPT-FUNCTION")) notes.push("FUNCTION");
+      if (state.options.includes("OPT-INFANT-SETTING")) notes.push("INFANT-SETTING");
+      if (state.options.includes("OPT-YOUTH-SCHOOL")) notes.push("YOUTH-SCHOOL");
+      if (state.options.includes("OPT-YOUTH-MULTISETTING")) notes.push("MULTISETTING");
+      if (state.options.includes("OPT-YOUTH-REL") || state.options.includes("OPT-ADULT-REL")) notes.push("RELATIONSHIP");
+      if (state.options.includes("OPT-SENIOR-ADL")) notes.push("SENIOR-ADL");
+      if (state.options.includes("OPT-SENIOR-MED")) notes.push("SENIOR-MED");
+      if (state.options.includes("OPT-SENIOR-FAMILY")) notes.push("SENIOR-FAMILY");
+      if (state.problem === "PROB-TRAUMA") notes.push("TRAUMA");
+      if (state.purpose === "PUR-3") notes.push("TREATMENT");
+      if (state.purpose === "PUR-4") notes.push("OFFICIAL");
+
+      return notes;
+    }
+
+    function getDisplayRule(baseRule) {
+      const data = { ...ruleData[baseRule] };
+
+      if (baseRule === "RULE-7") {
+        if (state.age === "AGE-YOUTH") {
+          data.title = "아동·청소년 종합심리평가";
+          data.detailedTitle = "정서·행동 및 인지 특성을 함께 살펴보는 종합평가";
+        } else if (state.age === "AGE-SENIOR") {
+          data.title = "노년기 종합심리평가";
+          data.detailedTitle = "정서 상태와 필요한 인지 특성을 함께 살펴보는 종합평가";
+        }
+      }
+
+      return data;
+    }
+
+    function renderResult() {
+      const baseRule = determineBaseRule();
+      const depth = determineDepth(baseRule);
+      const notes = determineNotes();
+      const data = getDisplayRule(baseRule);
+      const adhdComplexComprehensive = isAdhdComplexComprehensive(baseRule);
+
+      if (adhdComplexComprehensive) {
+        data.title = "종합심리평가";
+        data.detailedTitle = "ADHD 가능성과 정서·수면·인지 요인을 함께 감별하는 종합평가";
+        data.summary = "주의집중의 어려움만 따로 확인하기보다 ADHD 가능성과 함께 정서 상태, 수면, 인지적 특성 및 일상 기능을 폭넓게 살펴보는 평가가 적합해 보여요.";
+        data.looks = [
+          "주의집중 및 실행기능",
+          "인지적 강·약점",
+          "우울·불안 등 정서 상태",
+          "성격 및 대처 특성",
+          "수면 및 일상생활 기능"
+        ];
+        data.screeningTitle = "주의집중 및 ADHD 선별평가";
+        data.screeningText = "부담이 적은 평가부터 시작하고 싶다면 전산화 주의력검사와 ADHD 관련 평정척도 등을 통해 추가적인 정밀평가가 필요한지 먼저 확인할 수 있습니다.";
+      }
+
+      const isScreening =
+        depth === "screening" || depth === "infant-screening";
+
+      const mainTitle = isScreening ? data.screeningTitle : data.title;
+      const detailTitle = isScreening
+        ? "부담이 적은 검사부터 현재 상태를 확인해볼 수 있어요."
+        : (data.detailedTitle || data.title);
+
+      const mainSummary = isScreening ? data.screeningText : data.summary;
+
+      const tagIcons = ["🧠", "🎭", "📋", "🧩", "💬", "🔎"];
+      const tagsHtml = data.looks.slice(0, 5)
+        .map((item, index) =>
+          `<span class="result-tag">${tagIcons[index % tagIcons.length]} ${item}</span>`
+        ).join("");
+
+      const complaint = complaintNotes[state.problem];
+
+      const personalizedReasons = [];
+
+      if (adhdComplexComprehensive) {
+        const reasons = [];
+        if (state.options.includes("OPT-EMOTION")) reasons.push("정서적인 어려움");
+        if (state.options.includes("OPT-SLEEP")) reasons.push("수면 또는 식사 변화");
+        if (state.options.includes("OPT-FUNCTION")) reasons.push("뚜렷한 일상 기능 저하");
+        if (state.purpose === "PUR-2") reasons.push("정확한 원인 감별");
+        if (state.purpose === "PUR-3") reasons.push("치료 계획 수립");
+        if (state.purpose === "PUR-4") reasons.push("공식적인 평가 목적");
+
+        personalizedReasons.push(
+          `주의집중 문제와 함께 ${reasons.join(", ")}${reasons.length ? "가" : "이"} 확인되어, ADHD만 단독으로 살펴보기보다 여러 가능성을 함께 평가하는 것이 적절해 보여요.`
+        );
+      } else if (complaint) {
+        personalizedReasons.push(complaint.text);
+      }
+      if (baseRule === "RULE-3" && state.age === "AGE-ADULT") {
+        personalizedReasons.push("성인 ADHD 평가에서는 현재 증상뿐 아니라 어린 시절부터 주의집중 및 실행기능 문제가 지속되어 왔는지 확인하는 것이 중요합니다.");
+      }
+      if (baseRule === "RULE-3" && state.age === "AGE-YOUTH") {
+        personalizedReasons.push("아동·청소년의 경우 가정과 학교 등 여러 환경에서 비슷한 어려움이 나타나는지 함께 확인하는 것이 중요합니다.");
+      }
+
+      const reasonText = personalizedReasons.length
+        ? personalizedReasons.join(" ")
+        : mainSummary;
+
+      const notesHtml = notes.length
+        ? `
+          <div>
+            <h3 style="margin:4px 0 10px;font-size:15px;">💡 함께 참고하면 좋은 추가 권고사항</h3>
+            <div class="note-stack">
+              ${notes.map((key) => {
+                const note = clinicalNotes[key];
+                return `
+                  <div class="recommendation-note">
+                    <strong>📌 ${note.title}</strong>
+                    <div style="margin-top:5px;">${note.text}</div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `
+        : "";
+
+      const alternativeHtml = isScreening
+        ? `
+          <div class="section-card">
+            <h3>🏆 추가 확인이 필요하다면</h3>
+            <p><strong>${data.title}</strong></p>
+            <p style="margin-top:7px;">선별 결과나 면담에서 추가 확인이 필요한 경우 보다 종합적인 평가를 이어서 고려할 수 있습니다.</p>
+          </div>
+        `
+        : `
+          <div class="section-card">
+            <h3>💡 간단한 대안이 필요하다면</h3>
+            <p><strong>${data.screeningTitle}</strong></p>
+            <p style="margin-top:7px;">${data.screeningText}</p>
+          </div>
+        `;
+
+      document.getElementById("resultContent").innerHTML = `
+        <div class="result-wrap">
+          <div class="result-hero">
+            <div class="result-label">🧑‍⚕️ 맞춤 분석 완료</div>
+            <p class="result-summary">
+              응답해주신 내용을 바탕으로 추천 평가와 추가 권고사항을 정리했습니다.
+            </p>
+          </div>
+
+          <div class="section-card">
+            <div class="result-label">${isScreening ? "💡 먼저 받아볼 평가" : "🏆 추천 평가"}</div>
+            <h2 class="result-title">${mainTitle}</h2>
+            <div class="result-detail-title">${detailTitle}</div>
+            <p>${reasonText}</p>
+            <div class="tag-list">${tagsHtml}</div>
+          </div>
+
+          ${alternativeHtml}
+
+          ${notesHtml}
+
+          <div class="qualification">
+            <strong>🧑‍⚕️ 어디에서 받을 수 있나요?</strong>
+            심리평가는 심리평가에 대한 전문적인 훈련을 받은
+            <strong>정신건강임상심리사 또는 임상심리전문가 등 자격을 갖춘 전문가</strong>에게
+            받는 것을 권장합니다.
+          </div>
+
+          <a
+            class="center-link"
+            href="https://kocpa.kr/pages/center"
+            target="_blank"
+            rel="noopener noreferrer"
+          >🔎 가까운 전문가 찾기</a>
+
+          <div class="disclaimer">
+            심리평가는 진단을 위한 도구일 뿐, 최종 판단은 전문가와의 상담을 통해 이루어집니다.
+            실제 검사 구성은 연령, 증상, 병력, 평가 목적 및 기관에 따라 달라질 수 있습니다.
+          </div>
+        </div>
+      `;
+
+      setScreen(5);
+    }
+
+    document.getElementById("showResult").addEventListener("click", () => {
+      if (state.options.length === 0) {
+        optionError.classList.add("show");
+        return;
+      }
+      renderResult();
+    });
+
+
+    document.getElementById("startButton").addEventListener("click", () => {
+      setScreen(0);
+    });
+
+    document.getElementById("restart").addEventListener("click", () => {
+      state.perspective = null;
+      state.age = null;
+      state.problem = null;
+      state.purpose = null;
+      state.options = [];
+
+      document.querySelectorAll(".choice").forEach((button) =>
+        button.classList.remove("selected")
+      );
+
+      problemChoices.innerHTML = "";
+      additionalChoices.innerHTML = "";
+      optionError.classList.remove("show");
+      updateAgeChoices();
+      updatePurposeCopy();
+      setScreen(-1);
+    });
+
+    updateAgeChoices();
+    updatePurposeCopy();
+    renderProblemChoices();
+    setScreen(-1);
+  </script>
+</body>
+</html>

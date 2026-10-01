@@ -1014,6 +1014,12 @@
     @media (max-width: 440px) {
       .panel { box-shadow: 2px 2px 0 var(--quiet-shadow); }
     }
+
+    /* 첫 안내 화면에서는 푸터가 콘텐츠 바로 아래에 오도록 */
+.app:has(.cover-screen.active) {
+  flex: 0 0 auto;
+}
+       
   </style>
 
 </head>

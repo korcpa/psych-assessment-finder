@@ -786,7 +786,8 @@
       z-index: 2;
       top: 36px;
       left: 42px;
-      width: min(45%, 180px);
+      width: fit-content;
+      max-width: 190px;
       padding: 7px 9px;
       border: 2px solid var(--line);
       box-shadow: 2px 2px 0 #ae825a;
@@ -914,7 +915,7 @@
 
     @media (max-width: 360px) {
       .cover-stage { height: 235px; }
-      .speech-bubble { width: 47%; left: 30px; top: 28px; padding: 7px 9px; }
+      .speech-bubble { max-width: 175px; left: 30px; top: 28px; padding: 7px 9px; }
       .cover-character { right: -35px; bottom: -24px; width: 216px; }
     }
 
